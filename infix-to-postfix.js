@@ -1,6 +1,6 @@
 function infix_to_postfix() {
     formula = document.getElementById("formula-box").value;
-    formula = formula.split("");
+    formula = formula.split(" ");
     result = 0;
     //Define Oparator (Stack) and oparand.
     oparator = [];
@@ -8,14 +8,59 @@ function infix_to_postfix() {
     for(i = 0; i <= formula.length; i++) {
         console.log(oparand[oparand.length]);
         switch(formula[i]) {
+            case "%": {
+                last = oparator[oparator.length - 1];
+                switch(last) {
+                    case "%": {
+                        oparator.pop();
+                        oparand.push(last);
+                        oparator.push("%");
+                        break;
+                    }
+                    case "^": {
+                        oparator.pop();
+                        oparand.push(last);
+                        oparator.push("%");
+                        break;
+                    }
+                    default: {
+                        oparator.push("%");
+                        break;
+                    }
+                }
+                break;
+            }
             case "^": {
                 last = oparator[oparator.length - 1];
-                oparator.push("^");
+                switch(last) {
+                    case "%": {
+                        oparator.pop();
+                        oparand.push(last);
+                        oparator.push("^");
+                        break;
+                    }
+                    case "^": {
+                        oparator.pop();
+                        oparand.push(last);
+                        oparator.push("^");
+                        break;
+                    }
+                    default: {
+                        oparator.push("^");
+                        break;
+                    }
+                }
                 break;
             }
             case "*": {
                 last = oparator[oparator.length - 1];
                 switch(last) {
+                    case "%": {
+                        oparator.pop();
+                        oparand.push(last);
+                        oparator.push("*");
+                        break;
+                    }
                     case "^": {
                         oparator.pop();
                         oparand.push(last);
@@ -44,6 +89,12 @@ function infix_to_postfix() {
             case "/": {
                 last = oparator[oparator.length - 1];
                 switch(last) {
+                    case "%": {
+                        oparator.pop();
+                        oparand.push(last);
+                        oparator.push("/");
+                        break;
+                    }
                     case "^": {
                         oparator.pop();
                         oparand.push(last);
@@ -72,6 +123,12 @@ function infix_to_postfix() {
             case "+": {
                 last = oparator[oparator.length - 1];
                 switch(last) {
+                    case "%": {
+                        oparator.pop();
+                        oparand.push(last);
+                        oparator.push("+");
+                        break;
+                    }
                     case "^": {
                         oparator.pop();
                         oparand.push(last);
@@ -112,27 +169,38 @@ function infix_to_postfix() {
             case "-": {
                 last = oparator[oparator.length - 1];
                 switch(last) {
+                    case "%": {
+                        oparator.pop();
+                        oparand.push(last);
+                        oparator.push("-");
+                        break;
+                    }
                     case "^": {
+                        oparator.pop();
                         oparand.push(last);
                         oparator.push("-");
                         break;
                     }
                     case "*": {
+                        oparator.pop();
                         oparand.push(last);
                         oparator.push("-");
                         break;
                     }
                     case "/": {
+                        oparator.pop();
                         oparand.push(last);
                         oparator.push("-");
                         break;
                     }
                     case "+": {
+                        oparator.pop();
                         oparand.push(last);
                         oparator.push("-");
                         break;
                     }
                     case "-": {
+                        oparator.pop();
                         oparand.push(last);
                         oparator.push("-");
                         break;
@@ -171,6 +239,64 @@ function infix_to_postfix() {
         oparator.pop();
         oparand.pop();
         oparand.push(last);
+    }
+    console.log("oparator: "+oparator);
+    console.log("oparand: "+oparand);
+
+    result_addr = 0;
+    //Calculate from postfix oparand.
+    i = 0;
+    while(1) {
+        if(oparand[i] == undefined) {
+            break;
+        }
+        if(i < 0) {
+            i = 0;
+        }
+        else if(oparand[i] == "%") {
+            result = oparand[i-2] % oparand[i-1];
+            oparand.splice(i-2,i+1);
+            oparand.unshift(result);
+            i -= 2;
+            console.log(oparand,i);
+        }
+        else if(oparand[i] == "^") {
+            result = oparand[i-2] ** oparand[i-1];
+            oparand.splice(i-2,i+1);
+            oparand.unshift(result);
+            i -= 2;
+            console.log(oparand,i);
+        }
+        else if(oparand[i] == "*") {
+            result = oparand[i-2] * oparand[i-1];
+            oparand.splice(i-2,i+1);
+            oparand.unshift(result);
+            i -= 2;
+            console.log(oparand,i);
+        }
+        else if(oparand[i] == "/") {
+            result = oparand[i-2] / oparand[i-1];
+            oparand.splice(i-2,i+1);
+            oparand.unshift(result);
+            i -= 2;
+            console.log(oparand,i);
+        }
+        else if(oparand[i] == "+") {
+            result = parseInt(oparand[i-2]) + parseInt(oparand[i-1]);
+            oparand.splice(i-2,i+1);
+            oparand.unshift(result);
+            i -= 2;
+            console.log(oparand,i);
+        }
+        else if(oparand[i] == "-") {
+            result = oparand[i-2] - oparand[i-1];
+            oparand.splice(i-2,i+1);
+            oparand.unshift(result);
+            i -= 2;
+            console.log(oparand,i);
+        } else {
+            i++;
+        }
     }
     console.log("oparator: "+oparator);
     console.log("oparand: "+oparand);
